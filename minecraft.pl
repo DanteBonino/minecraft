@@ -48,3 +48,67 @@ menorCantidadDe(Jugador, Item, LimiteSuperior):-
     cantidadDeItem(Jugador, Item, Cantidad),
     Cantidad =< LimiteSuperior.
 
+%Punto 2:
+%a)
+hayMonstruos(Lugar):-
+    lugar(Lugar,_,NivelOscuridad),
+    NivelOscuridad > 6.
+
+%b)
+correPeligro(Jugador):-
+    seEncuentraDondeLosMonstruos(Jugador).
+correPeligro(Jugador):-
+    estaHambriento(Jugador),
+    not(tieneItemComestible(Jugador,_)).
+
+seEncuentraDondeLosMonstruos(Jugador):-
+    hayMonstruos(Lugar),
+    personaEnLugar(Lugar,Jugador).
+
+personasEnLugar(Lugar,Personas):-
+    lugar(Lugar,Personas,_).
+
+estaHambriento(Jugador):-
+    nivelDeHambre(Jugador,Hambre),
+    Hambre < 4.
+
+nivelDeHambre(Jugador, Hambre):-
+    jugador(Jugador,_,Hambre).
+
+%c)
+peligrosidadLugar(Lugar,0):-
+    inhabitado(Lugar).
+peligrosidadLugar(Lugar,Peligrosidad):-
+    lugar(Lugar,_,_),
+    not(inhabitado(Lugar)),
+    peligrosidadLugarHabitado(Lugar,Peligrosidad).
+
+inhabitado(Lugar):-
+    personasEnLugar(Lugar,[]).
+
+peligrosidadLugarHabitado(Lugar,100):-
+    hayMonstruos(Lugar).
+peligrosidadLugarHabitado(Lugar,Peligrosidad):-
+    not(hayMonstruos(Lugar)),
+    porcentajeDeHambrientos(Lugar,Peligrosidad).
+
+porcentajeDeHambrientos(Lugar,Porcentaje):-
+    cantidadHambrientos(Lugar,CantidadHambrientos),
+    cantidadPersonas(Lugar,Cantidad),
+    Porcentaje is (CantidadHambrientos * 100) / Cantidad.
+
+cantidadHambrientos(Lugar,Cantidad):-
+    findall(Hambriento, personaHambrientaEn(Lugar,Hambriento), Hambrientos),
+    length(Hambrientos,Cantidad).
+
+personaEnLugar(Lugar,Persona):-
+    personasEnLugar(Lugar,Personas),
+    member(Persona,Personas).
+
+personaHambrientaEn(Lugar,Hambriento):-
+    personaEnLugar(Lugar,Hambriento),
+    estaHambriento(Hambriento).
+
+cantidadPersonas(Lugar,Cantidad):-
+    personasEnLugar(Lugar,Personas),
+    length(Personas,Cantidad).
