@@ -112,3 +112,21 @@ personaHambrientaEn(Lugar,Hambriento):-
 cantidadPersonas(Lugar,Cantidad):-
     personasEnLugar(Lugar,Personas),
     length(Personas,Cantidad).
+
+%Punto 3:
+item(horno, [ itemSimple(piedra, 8) ]).
+item(placaDeMadera, [ itemSimple(madera, 1) ]).
+item(palo, [ itemCompuesto(placaDeMadera) ]).
+item(antorcha, [ itemCompuesto(palo), itemSimple(carbon, 1) ]).
+
+
+puedeConstruir(Item,Jugador):-
+    item(Item,ElementosNecesarios),
+    jugador(Jugador,_,_),
+    forall(member(ElementoNecesario,ElementosNecesarios), tieneElementoNecesario(Jugador, ElementoNecesario)).
+
+tieneElementoNecesario(Jugador,itemCompuesto(Item)):-
+    tieneItem(Jugador,Item).
+tieneElementoNecesario(Jugador, itemSimple(Item, Cantidad)):-
+    cantidadDeItem(Jugador,Item,CantidadQueTiene),
+    CantidadQueTiene >= Cantidad.
